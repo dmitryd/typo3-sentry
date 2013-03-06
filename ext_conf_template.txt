@@ -1,0 +1,5 @@
+# cat=basic/enable; type=string; label=Path to configuration file:Optional. If you placed RealURL configuration in a separate file, RealURL can include it for you. Specify a file name related to web site root directory.
+sentryDSN = http://user:pass@127.0.0.1:9000/2
+
+# cat=basic/enable; type=boolean; label=Pass errors to TYPO3 error handler:If checked, errors will be passed to TYPO3 error handler (debug or production, depending on your settings) in addition to sending them to Sentry.
+passErrorsToTypo3 = 1
