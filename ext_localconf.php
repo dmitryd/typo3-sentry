@@ -24,12 +24,9 @@ if (!function_exists('sentry_register')) {
 
 			// Set error handler
 			$GLOBALS['SENTRY_CLIENT'] = new Raven_Client($extConf['sentryDSN']);
-			$GLOBALS['SENTRY_ERROR_HANDLER'] = new Raven_ErrorHandler($GLOBALS['SENTRY_CLIENT']);
-			//$errorHandler = new Raven_ErrorHandler($GLOBALS['SENTRY_CLIENT']);
-			//$errorHandler->registerErrorHandler(intval($extConf['passErrorsToTypo3']), E_ALL & ~(E_STRICT | E_NOTICE | E_DEPRECATED));
-			//$errorHandler->registerExceptionHandler(intval($extConf['passErrorsToTypo3']));
-			\TYPO3\CMS\Extension\Sentry\SentryErrorHandler::initialize();
-			\TYPO3\CMS\Extension\Sentry\SentryExceptionHandler::initialize();
+			$ravenErrorHandler = new Raven_ErrorHandler($GLOBALS['SENTRY_CLIENT']);
+			\TYPO3\CMS\Extension\Sentry\SentryErrorHandler::initialize($ravenErrorHandler);
+			\TYPO3\CMS\Extension\Sentry\SentryExceptionHandler::initialize($ravenErrorHandler);
 		}
 	}
 

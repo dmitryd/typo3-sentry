@@ -5,6 +5,9 @@ class SentryErrorHandler implements \TYPO3\CMS\Core\Error\ErrorHandlerInterface 
 
 	static protected $oldErrorHandler;
 
+	/** @var \Raven_ErrorHandler */
+	static protected $ravenErrorHandler;
+
 	/** @var \TYPO3\CMS\Core\Error\ErrorHandlerInterface */
 	protected $typo3ErrorHandler = NULL;
 
@@ -20,7 +23,7 @@ class SentryErrorHandler implements \TYPO3\CMS\Core\Error\ErrorHandlerInterface 
 			// The code below will set up a TYPO3 error handler
 			$this->typo3ErrorHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(self::$oldErrorHandler);
 
-			$GLOBALS['SENTRY_ERROR_HANDLER']->registerErrorHandler(true, E_ALL & ~(E_STRICT | E_NOTICE | E_DEPRECATED));
+			self::$ravenErrorHandler->registerErrorHandler(true, E_ALL & ~(E_STRICT | E_NOTICE | E_DEPRECATED));
 		}
 	}
 
@@ -54,7 +57,9 @@ class SentryErrorHandler implements \TYPO3\CMS\Core\Error\ErrorHandlerInterface 
 		// Empty
 	}
 
-	public static function initialize() {
+	public static function initialize($ravenErrorHandler) {
+		self::$ravenErrorHandler = $ravenErrorHandler;
+
 		// Save old error handler
 		self::$oldErrorHandler = $GLOBALS['TYPO3_CONF_VARS']['SYS']['errorHandler'];
 

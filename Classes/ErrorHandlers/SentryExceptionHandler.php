@@ -5,6 +5,9 @@ class SentryExceptionHandler extends \TYPO3\CMS\Core\Error\AbstractExceptionHand
 
 	static protected $oldExceptionHandler;
 
+	/** @var \Raven_ErrorHandler */
+	static protected $ravenErrorHandler;
+
 	/**
 	 * Constructs this exception handler - registers itself as the default exception handler.
 	 */
@@ -17,7 +20,7 @@ class SentryExceptionHandler extends \TYPO3\CMS\Core\Error\AbstractExceptionHand
 			}
 
 			// We always register exception handler for Sentry, regardless of TYPO3 settings!
-			$GLOBALS['SENTRY_ERROR_HANDLER']->registerExceptionHandler(true);
+			self::$ravenErrorHandler->registerExceptionHandler(true);
 		}
 	}
 
@@ -41,7 +44,9 @@ class SentryExceptionHandler extends \TYPO3\CMS\Core\Error\AbstractExceptionHand
 		// Empty, not used directly
 	}
 
-	public static function initialize() {
+	public static function initialize($ravenErrorHandler) {
+		self::$ravenErrorHandler = $ravenErrorHandler;
+
 		// Save old error handler
 		self::$oldExceptionHandler = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionHandler'];
 
