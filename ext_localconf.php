@@ -25,6 +25,10 @@ if (!function_exists('sentry_register')) {
 			// Set error handler
 			$GLOBALS['SENTRY_CLIENT'] = new Raven_Client($extConf['sentryDSN']);
 			$ravenErrorHandler = new Raven_ErrorHandler($GLOBALS['SENTRY_CLIENT']);
+			// Early error handler
+			$ravenErrorHandler->registerErrorHandler(false);
+			$ravenErrorHandler->registerExceptionHandler(false);
+			// Make sure that TYPO3 does not override our handler
 			\TYPO3\CMS\Extension\Sentry\SentryErrorHandler::initialize($ravenErrorHandler);
 			\TYPO3\CMS\Extension\Sentry\SentryExceptionHandler::initialize($ravenErrorHandler);
 		}
