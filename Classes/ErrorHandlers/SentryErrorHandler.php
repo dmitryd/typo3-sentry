@@ -21,7 +21,7 @@ class SentryErrorHandler implements \TYPO3\CMS\Core\Error\ErrorHandlerInterface 
 		$extConf = @unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['sentry']);
 		if ($extConf['passErrorsToTypo3']) {
 			// The code below will set up a TYPO3 error handler
-			$this->typo3ErrorHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(self::$oldErrorHandler);
+			$this->typo3ErrorHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(self::$oldErrorHandler, $errorHandlerErrors);
 
 			self::$ravenErrorHandler->registerErrorHandler(true, E_ALL & ~(E_STRICT | E_NOTICE | E_DEPRECATED));
 		}
