@@ -25,7 +25,7 @@ class SentryErrorHandler implements \TYPO3\CMS\Core\Error\ErrorHandlerInterface 
 			// The code below will set up a TYPO3 error handler
 			$this->typo3ErrorHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(self::$oldErrorHandler, $errorHandlerErrors);
 
-			self::$ravenErrorHandler->registerErrorHandler(true, self::$errorMask));
+			self::$ravenErrorHandler->registerErrorHandler(true, self::$errorMask);
 		}
 	}
 
