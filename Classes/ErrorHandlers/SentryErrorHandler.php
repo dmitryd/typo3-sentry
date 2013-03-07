@@ -1,17 +1,56 @@
 <?php
 namespace TYPO3\CMS\Extension\Sentry;
+/***************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2013 Dmitry Dulepov <dmitry.dulepov@gmail.com>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 
+/**
+ * This class contains a error handler, which is compatible with 6.x. It replaces
+ * TYPO3 standard error handler to install the Sentry handler. Such complex
+ * installation is necessary because TYPO3 requires interfaces to be implemented
+ * for error handlers.
+ *
+ * @author Dmitry Dulepov <dmitry.dulepov@gmail.com>
+ */
 class SentryErrorHandler implements \TYPO3\CMS\Core\Error\ErrorHandlerInterface {
 
+	/**
+	 * Error mask (E_xxx constants) to catch.
+	 *
+	 * @var int
+	 */
 	static protected $errorMask;
 
-	static protected $oldErrorHandler;
+	/** @var string */
+	static protected $oldErrorHandlerClassName;
 
 	/** @var \Raven_ErrorHandler */
 	static protected $ravenErrorHandler;
 
 	/** @var \TYPO3\CMS\Core\Error\ErrorHandlerInterface */
-	protected $typo3ErrorHandler = NULL;
+	protected $typo3ErrorHandler = null;
 
 	/**
 	 * Registers this class as default error handler
@@ -23,7 +62,7 @@ class SentryErrorHandler implements \TYPO3\CMS\Core\Error\ErrorHandlerInterface 
 		$extConf = @unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['sentry']);
 		if ($extConf['passErrorsToTypo3']) {
 			// The code below will set up a TYPO3 error handler
-			$this->typo3ErrorHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(self::$oldErrorHandler, $errorHandlerErrors);
+			$this->typo3ErrorHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(self::$oldErrorHandlerClassName, $errorHandlerErrors);
 
 			self::$ravenErrorHandler->registerErrorHandler(true, self::$errorMask);
 		}
@@ -59,12 +98,19 @@ class SentryErrorHandler implements \TYPO3\CMS\Core\Error\ErrorHandlerInterface 
 		// Empty
 	}
 
-	public static function initialize($ravenErrorHandler, $errorMask) {
+	/**
+	 * Prepares the class to replace TYPO3 standard handler with Raven-PHP
+	 * implementation.
+	 *
+	 * @param \Raven_ErrorHandler $ravenErrorHandler
+	 * @return void
+	 */
+	public static function initialize(\Raven_ErrorHandler $ravenErrorHandler, $errorMask) {
 		self::$ravenErrorHandler = $ravenErrorHandler;
 		self::$errorMask = $errorMask;
 
 		// Save old error handler
-		self::$oldErrorHandler = $GLOBALS['TYPO3_CONF_VARS']['SYS']['errorHandler'];
+		self::$oldErrorHandlerClassName = $GLOBALS['TYPO3_CONF_VARS']['SYS']['errorHandler'];
 
 		$GLOBALS['TYPO3_CONF_VARS']['SYS']['errorHandler'] = 'TYPO3\\CMS\\Extension\\Sentry\\SentryErrorHandler';
 	}
