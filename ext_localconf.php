@@ -12,8 +12,10 @@ if (!function_exists('sentry_register')) {
 	function sentry_register() {
 		$extConf = @unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['sentry']);
 		if (is_array($extConf) && isset($extConf['sentryDSN'])) {
+			$running6x = (version_compare(TYPO3_branch, '6.0', '>='));
+
 			// Register Raven autoloader
-			if (version_compare(TYPO3_branch, '6.0', '>=')) {
+			if ($running6x) {
 				$ravenPhpAutoloaderPath = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('sentry', 'lib/raven-php/lib/Raven/Autoloader.php');
 			}
 			else {
@@ -25,12 +27,25 @@ if (!function_exists('sentry_register')) {
 			// Set error handler
 			$GLOBALS['SENTRY_CLIENT'] = new Raven_Client($extConf['sentryDSN']);
 			$ravenErrorHandler = new Raven_ErrorHandler($GLOBALS['SENTRY_CLIENT']);
+
+			$errorMask = E_ALL & ~(E_STRICT | E_DEPRECATED);
+			if (!$extConf['catchNotices']) {
+				$errorMask &= ~E_NOTICE;
+			}
+
 			// Early error handler
-			$ravenErrorHandler->registerErrorHandler(false);
+			$ravenErrorHandler->registerErrorHandler(false, $errorMask);
 			$ravenErrorHandler->registerExceptionHandler(false);
+
 			// Make sure that TYPO3 does not override our handler
-			\TYPO3\CMS\Extension\Sentry\SentryErrorHandler::initialize($ravenErrorHandler);
-			\TYPO3\CMS\Extension\Sentry\SentryExceptionHandler::initialize($ravenErrorHandler);
+			if ($running6x) {
+				\TYPO3\CMS\Extension\Sentry\SentryErrorHandler::initialize($ravenErrorHandler, $errorMask);
+				\TYPO3\CMS\Extension\Sentry\SentryExceptionHandler::initialize($ravenErrorHandler);
+			}
+			else {
+				tx_sentry_errorhandler::initialize($ravenErrorHandler, $errorMask);
+				tx_sentry_exceptionhandler::initialize($ravenErrorHandler);
+			}
 		}
 	}
 

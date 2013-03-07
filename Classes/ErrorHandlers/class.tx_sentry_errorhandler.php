@@ -1,38 +1,38 @@
 <?php
-namespace TYPO3\CMS\Extension\Sentry;
 
-class SentryErrorHandler implements \TYPO3\CMS\Core\Error\ErrorHandlerInterface {
+class tx_sentry_errorhandler implements t3lib_error_ErrorHandlerInterface {
 
 	static protected $errorMask;
 
 	static protected $oldErrorHandler;
 
-	/** @var \Raven_ErrorHandler */
+	/** @var Raven_ErrorHandler */
 	static protected $ravenErrorHandler;
 
-	/** @var \TYPO3\CMS\Core\Error\ErrorHandlerInterface */
+	/** @var t3lib_error_ErrorHandlerInterface */
 	protected $typo3ErrorHandler = NULL;
 
 	/**
 	 * Registers this class as default error handler
 	 *
-	 * @param integer $errorHandlerErrors The integer representing the E_* error level which should be
+	 * @param integer    The integer representing the E_* error level which should be
+	 *                    handled by the registered error handler.
 	 * @return void
 	 */
 	public function __construct($errorHandlerErrors) {
 		$extConf = @unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['sentry']);
 		if ($extConf['passErrorsToTypo3']) {
 			// The code below will set up a TYPO3 error handler
-			$this->typo3ErrorHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(self::$oldErrorHandler, $errorHandlerErrors);
+			$this->typo3ErrorHandler = t3lib_div::makeInstance(self::$oldErrorHandler, $errorHandlerErrors);
 
-			self::$ravenErrorHandler->registerErrorHandler(true, self::$errorMask));
+			self::$ravenErrorHandler->registerErrorHandler(true, self::$errorMask);
 		}
 	}
 
 	/**
 	 * Defines which error levels should result in an exception thrown.
 	 *
-	 * @param integer $exceptionalErrors The integer representing the E_* error level to handle as exceptions
+	 * @param integer    The integer representing the E_* error level to handle as exceptions
 	 * @return void
 	 */
 	public function setExceptionalErrors($exceptionalErrors) {
@@ -48,16 +48,17 @@ class SentryErrorHandler implements \TYPO3\CMS\Core\Error\ErrorHandlerInterface 
 	 * If TYPO3_MODE is 'BE' the error message is also added to the flashMessageQueue, in FE the error message
 	 * is displayed in the admin panel (as TsLog message)
 	 *
-	 * @param integer $errorLevel The error level - one of the E_* constants
-	 * @param string $errorMessage The error message
-	 * @param string $errorFile Name of the file the error occurred in
-	 * @param integer $errorLine Line number where the error occurred
+	 * @param integer    The error level - one of the E_* constants
+	 * @param string    The error message
+	 * @param string    Name of the file the error occurred in
+	 * @param integer    Line number where the error occurred
 	 * @return void
-	 * @throws \TYPO3\CMS\Core\Error\Exception with the data passed to this method if the error is registered as exceptionalError
+	 * @throws t3lib_error_Exception with the data passed to this method if the error is registered as exceptionalError
 	 */
 	public function handleError($errorLevel, $errorMessage, $errorFile, $errorLine) {
 		// Empty
 	}
+
 
 	public static function initialize($ravenErrorHandler, $errorMask) {
 		self::$ravenErrorHandler = $ravenErrorHandler;
@@ -66,6 +67,6 @@ class SentryErrorHandler implements \TYPO3\CMS\Core\Error\ErrorHandlerInterface 
 		// Save old error handler
 		self::$oldErrorHandler = $GLOBALS['TYPO3_CONF_VARS']['SYS']['errorHandler'];
 
-		$GLOBALS['TYPO3_CONF_VARS']['SYS']['errorHandler'] = 'TYPO3\\CMS\\Extension\\Sentry\\SentryErrorHandler';
+		$GLOBALS['TYPO3_CONF_VARS']['SYS']['errorHandler'] = 'tx_sentry_errorhandler';
 	}
 }
