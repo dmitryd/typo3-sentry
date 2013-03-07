@@ -49,7 +49,6 @@ if (!function_exists('sentry_register')) {
 		}
 	}
 
-	set_time_limit(120);
 	sentry_register();
 }
 
