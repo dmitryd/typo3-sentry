@@ -28,9 +28,9 @@ if (!function_exists('sentry_register')) {
 			$GLOBALS['SENTRY_CLIENT'] = new Raven_Client($extConf['sentryDSN']);
 			$ravenErrorHandler = new Raven_ErrorHandler($GLOBALS['SENTRY_CLIENT']);
 
-			$errorMask = E_ALL & ~(E_STRICT | E_DEPRECATED);
-			if (!$extConf['catchNotices']) {
-				$errorMask &= ~E_NOTICE;
+			$errorMask = E_ALL & ~(E_DEPRECATED | E_NOTICE);
+			if (!$extConf['catchStrict']) {
+				$errorMask &= ~E_STRICT;
 			}
 
 			// Early error handler
@@ -49,6 +49,7 @@ if (!function_exists('sentry_register')) {
 		}
 	}
 
+	set_time_limit(120);
 	sentry_register();
 }
 
