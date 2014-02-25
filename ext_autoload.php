@@ -6,8 +6,8 @@ else {
 	$extpath = t3lib_extMgm::extPath('sentry');
 }
 return array(
-	'TYPO3\\CMS\\Extension\\Sentry\\SentryErrorHandler' => $extpath . 'Classes/ErrorHandlers/SentryErrorHandler.php',
-	'TYPO3\\CMS\\Extension\\Sentry\\SentryExceptionHandler' => $extpath . 'Classes/ErrorHandlers/SentryExceptionHandler.php',
+	'DmitryDulepov\Sentry\ErrorHandlers\SentryErrorHandler' => $extpath . 'Classes/ErrorHandlers/SentryErrorHandler.php',
+	'DmitryDulepov\Sentry\ErrorHandlers\SentryExceptionHandler' => $extpath . 'Classes/ErrorHandlers/SentryExceptionHandler.php',
 	'tx_sentry_errorhandler' => $extpath . 'Classes/ErrorHandlers/class.tx_sentry_errorhandler.php',
 	'tx_sentry_exceptionhandler' => $extpath . 'Classes/ErrorHandlers/class.tx_sentry_exceptionhandler.php',
 );

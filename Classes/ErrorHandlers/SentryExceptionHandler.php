@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\Extension\Sentry;
+namespace DmitryDulepov\Sentry\ErrorHandlers;
 /***************************************************************
  *  Copyright notice
  *
@@ -91,6 +91,6 @@ class SentryExceptionHandler extends \TYPO3\CMS\Core\Error\AbstractExceptionHand
 		// Save old error handler
 		self::$oldExceptionHandlerClassName = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionHandler'];
 
-		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionHandler'] = 'TYPO3\\CMS\\Extension\\Sentry\\SentryExceptionHandler';
+		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionHandler'] = __CLASS__;
 	}
 }

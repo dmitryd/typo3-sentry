@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\Extension\Sentry;
+namespace DmitryDulepov\Sentry\ErrorHandlers;
 /***************************************************************
  *  Copyright notice
  *
@@ -112,6 +112,6 @@ class SentryErrorHandler implements \TYPO3\CMS\Core\Error\ErrorHandlerInterface 
 		// Save old error handler
 		self::$oldErrorHandlerClassName = $GLOBALS['TYPO3_CONF_VARS']['SYS']['errorHandler'];
 
-		$GLOBALS['TYPO3_CONF_VARS']['SYS']['errorHandler'] = 'TYPO3\\CMS\\Extension\\Sentry\\SentryErrorHandler';
+		$GLOBALS['TYPO3_CONF_VARS']['SYS']['errorHandler'] = __CLASS__;
 	}
 }

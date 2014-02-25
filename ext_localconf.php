@@ -39,8 +39,8 @@ if (!function_exists('sentry_register')) {
 
 			// Make sure that TYPO3 does not override our handler
 			if ($running6x) {
-				\TYPO3\CMS\Extension\Sentry\SentryErrorHandler::initialize($ravenErrorHandler, $errorMask);
-				\TYPO3\CMS\Extension\Sentry\SentryExceptionHandler::initialize($ravenErrorHandler);
+				\DmitryDulepov\Sentry\ErrorHandlers\SentryErrorHandler::initialize($ravenErrorHandler, $errorMask);
+				\DmitryDulepov\Sentry\ErrorHandlers\SentryExceptionHandler::initialize($ravenErrorHandler);
 			}
 			else {
 				tx_sentry_errorhandler::initialize($ravenErrorHandler, $errorMask);
