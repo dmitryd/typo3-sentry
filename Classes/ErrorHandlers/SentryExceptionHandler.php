@@ -25,6 +25,8 @@ namespace DmitryDulepov\Sentry\ErrorHandlers;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * This class contains an exception handler, which is compatible with 6.x. It
@@ -34,27 +36,21 @@ namespace DmitryDulepov\Sentry\ErrorHandlers;
  *
  * @author Dmitry Dulepov <dmitry.dulepov@gmail.com>
  */
-class SentryExceptionHandler extends \TYPO3\CMS\Core\Error\AbstractExceptionHandler {
-
-	/** @var string */
-	static protected $oldExceptionHandlerClassName;
-
-	/** @var \Raven_ErrorHandler */
-	static protected $ravenErrorHandler;
+class SentryExceptionHandler extends \TYPO3\CMS\Core\Error\AbstractExceptionHandler implements SingletonInterface {
 
 	/**
 	 * Constructs this exception handler - registers itself as the default exception handler.
+	 *
+	 * @param \Raven_ErrorHandler $ravenErrorHandler Note: must accept NULL because of compatiblity with the interface
 	 */
-	public function __construct() {
+	public function __construct(\Raven_ErrorHandler $ravenErrorHandler = NULL) {
 		$extConf = @unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['sentry']);
 		if ($extConf['passErrorsToTypo3']) {
-			if (self::$oldExceptionHandlerClassName) {
-				// The code below will set up a TYPO3 exception handler
-				\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(self::$oldExceptionHandlerClassName);
-			}
+			// The code below will set up a TYPO3 exception handler
+			GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionHandler']);
 
 			// We always register exception handler for Sentry, regardless of TYPO3 settings!
-			self::$ravenErrorHandler->registerExceptionHandler(true);
+			$ravenErrorHandler->registerExceptionHandler(true);
 		}
 	}
 
@@ -86,11 +82,6 @@ class SentryExceptionHandler extends \TYPO3\CMS\Core\Error\AbstractExceptionHand
 	 * @return void
 	 */
 	public static function initialize(\Raven_ErrorHandler $ravenErrorHandler) {
-		self::$ravenErrorHandler = $ravenErrorHandler;
-
-		// Save old error handler
-		self::$oldExceptionHandlerClassName = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionHandler'];
-
-		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionHandler'] = __CLASS__;
+		GeneralUtility::makeInstance(__CLASS__, $ravenErrorHandler);
 	}
 }

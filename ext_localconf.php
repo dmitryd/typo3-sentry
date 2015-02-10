@@ -12,15 +12,9 @@ if (!function_exists('sentry_register')) {
 	function sentry_register() {
 		$extConf = @unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['sentry']);
 		if (is_array($extConf) && isset($extConf['sentryDSN'])) {
-			$running6x = (version_compare(TYPO3_branch, '6.0', '>='));
-
 			// Register Raven autoloader
-			if ($running6x) {
-				$ravenPhpAutoloaderPath = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('sentry', 'lib/raven-php/lib/Raven/Autoloader.php');
-			}
-			else {
-				$ravenPhpAutoloaderPath = t3lib_extMgm::extPath('sentry', 'lib/raven-php/lib/Raven/Autoloader.php');
-			}
+			$ravenPhpAutoloaderPath = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('sentry', 'lib/raven-php/lib/Raven/Autoloader.php');
+			/** @noinspection PhpIncludeInspection */
 			require_once($ravenPhpAutoloaderPath);
 			Raven_Autoloader::register();
 
@@ -28,28 +22,32 @@ if (!function_exists('sentry_register')) {
 			$GLOBALS['SENTRY_CLIENT'] = new Raven_Client($extConf['sentryDSN']);
 			$ravenErrorHandler = new Raven_ErrorHandler($GLOBALS['SENTRY_CLIENT']);
 
-			$errorMask = E_ALL & ~(E_DEPRECATED | E_NOTICE);
-			if (!$extConf['catchStrict']) {
-				$errorMask &= ~E_STRICT;
-			}
+			$errorMask = E_ALL & ~(E_DEPRECATED | E_NOTICE | E_STRICT);
 
-			// Early error handler
-			$ravenErrorHandler->registerErrorHandler(false, $errorMask);
-			$ravenErrorHandler->registerExceptionHandler(false);
+			// Register handlers in case if we do not have to report to TYPO3. Otherwise we need to register those handlers first!
+			if (!$extConf['passErrorsToTypo3']) {
+				$ravenErrorHandler->registerErrorHandler(FALSE, $errorMask);
+				$ravenErrorHandler->registerExceptionHandler(FALSE);
+			}
 
 			// Make sure that TYPO3 does not override our handler
-			if ($running6x) {
-				\DmitryDulepov\Sentry\ErrorHandlers\SentryErrorHandler::initialize($ravenErrorHandler, $errorMask);
-				\DmitryDulepov\Sentry\ErrorHandlers\SentryExceptionHandler::initialize($ravenErrorHandler);
+			\DmitryDulepov\Sentry\ErrorHandlers\SentryErrorHandler::initialize($ravenErrorHandler, $errorMask);
+			\DmitryDulepov\Sentry\ErrorHandlers\SentryExceptionHandler::initialize($ravenErrorHandler);
+			// TYPO3 7.0
+			\DmitryDulepov\Sentry\ErrorHandlers\SentryExceptionHandlerFrontend::initialize($ravenErrorHandler);
+
+			// Register test plugin
+			if (is_array($extConf) && isset($extConf['enableTestPlugin']) && $extConf['enableTestPlugin']) {
+			        \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin('DmitryDulepov.sentry', 'ErrorHandlerTest', array('ErrorHandlerTest' => 'index,phpWarning,phpError,phpException'), array('ErrorHandlerTest' => 'index,phpWarning,phpError,phpException'));
 			}
-			else {
-				tx_sentry_errorhandler::initialize($ravenErrorHandler, $errorMask);
-				tx_sentry_exceptionhandler::initialize($ravenErrorHandler);
-			}
+			unset($extConf);
+
+			// Fix TYPO3 7.0 hard-coded FE exception handler
+			$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Frontend\\ContentObject\\Exception\\ProductionExceptionHandler'] = array(
+			    'className' => 'DmitryDulepov\\Sentry\\ErrorHandlers\\SentryExceptionHandlerFrontend',
+			);
 		}
 	}
 
 	sentry_register();
 }
-
-?>
