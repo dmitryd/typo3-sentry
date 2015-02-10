@@ -3,7 +3,7 @@ namespace DmitryDulepov\Sentry\ErrorHandlers;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Dmitry Dulepov <dmitry.dulepov@gmail.com>
+ *  (c) 2015 Dmitry Dulepov <dmitry.dulepov@gmail.com>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
