@@ -64,6 +64,6 @@ class ErrorHandlerTestController extends ActionController {
 	 * Simulates a PHP exception.
 	 */
 	public function phpExceptionAction() {
-		throw new \Exception('Test exception from EXT:sfperrorhandler', 0x07031973);
+		throw new \Exception('Test exception from EXT:sentry', 0x07031973);
 	}
 }
