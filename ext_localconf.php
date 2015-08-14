@@ -33,8 +33,10 @@ if (!function_exists('sentry_register')) {
 			// Make sure that TYPO3 does not override our handler
 			\DmitryDulepov\Sentry\ErrorHandlers\SentryErrorHandler::initialize($ravenErrorHandler, $errorMask);
 			\DmitryDulepov\Sentry\ErrorHandlers\SentryExceptionHandler::initialize($ravenErrorHandler);
-			// TYPO3 7.0
-			\DmitryDulepov\Sentry\ErrorHandlers\SentryExceptionHandlerFrontend::initialize($ravenErrorHandler);
+
+			if (version_compare(TYPO3_branch, '7.0', '>=')) {
+				\DmitryDulepov\Sentry\ErrorHandlers\SentryExceptionHandlerFrontend::initialize($ravenErrorHandler);
+			}
 
 			// Register test plugin
 			if (is_array($extConf) && isset($extConf['enableTestPlugin']) && $extConf['enableTestPlugin']) {
