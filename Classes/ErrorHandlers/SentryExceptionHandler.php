@@ -57,20 +57,20 @@ class SentryExceptionHandler extends \TYPO3\CMS\Core\Error\AbstractExceptionHand
 	/**
 	 * Formats and echoes the exception as XHTML.
 	 *
-	 * @param \Exception $exception The exception object
+	 * @param \Exception|\Throwable $exception The exception object
 	 * @return void
 	 */
-	public function echoExceptionWeb(\Exception $exception) {
+	public function echoExceptionWeb($exception) {
 		// Empty, not used directly
 	}
 
 	/**
 	 * Formats and echoes the exception for the command line
 	 *
-	 * @param \Exception $exception The exception object
+	 * @param \Exception|\Throwable $exception The exception object
 	 * @return void
 	 */
-	public function echoExceptionCLI(\Exception $exception) {
+	public function echoExceptionCLI($exception) {
 		// Empty, not used directly
 	}
 
