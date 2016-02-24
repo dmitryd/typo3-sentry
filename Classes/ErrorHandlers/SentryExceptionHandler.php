@@ -47,7 +47,10 @@ class SentryExceptionHandler extends \TYPO3\CMS\Core\Error\AbstractExceptionHand
 		$extConf = @unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['sentry']);
 		if ($extConf['passErrorsToTypo3']) {
 			// The code below will set up a TYPO3 exception handler
-			GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionHandler']);
+
+			if(trim($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionHandler']) !== '') {
+				GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionHandler']);
+			}
 
 			// We always register exception handler for Sentry, regardless of TYPO3 settings!
 			$ravenErrorHandler->registerExceptionHandler(true);
