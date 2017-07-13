@@ -1,5 +1,6 @@
 <?php
 namespace DmitryDulepov\Sentry\ErrorHandlers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,6 +26,9 @@ namespace DmitryDulepov\Sentry\ErrorHandlers;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
+use TYPO3\CMS\Core\Error\ErrorHandlerInterface;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -35,7 +39,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * @author Dmitry Dulepov <dmitry.dulepov@gmail.com>
  */
-class SentryErrorHandler implements \TYPO3\CMS\Core\Error\ErrorHandlerInterface, \TYPO3\CMS\Core\SingletonInterface {
+class SentryErrorHandler implements ErrorHandlerInterface, SingletonInterface {
 
 	/** @var \TYPO3\CMS\Core\Error\ErrorHandlerInterface */
 	protected $typo3ErrorHandler = null;

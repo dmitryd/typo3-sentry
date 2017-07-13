@@ -12,11 +12,6 @@ if (!function_exists('sentry_register')) {
 	function sentry_register() {
 		$extConf = @unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['sentry']);
 		if (is_array($extConf) && isset($extConf['sentryDSN'])) {
-			// Register Raven autoloader
-			$ravenPhpAutoloaderPath = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('sentry', 'lib/raven-php/lib/Raven/Autoloader.php');
-			/** @noinspection PhpIncludeInspection */
-			require_once($ravenPhpAutoloaderPath);
-			Raven_Autoloader::register();
 
 			// Set error handler
 			$GLOBALS['SENTRY_CLIENT'] = new Raven_Client($extConf['sentryDSN']);

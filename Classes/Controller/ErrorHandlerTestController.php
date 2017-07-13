@@ -1,4 +1,6 @@
 <?php
+namespace DmitryDulepov\Sentry\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -24,8 +26,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-namespace DmitryDulepov\Sentry\Controller;
 
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
